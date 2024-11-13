@@ -1,0 +1,18 @@
+apiVersion: v2
+appVersion: 4.1.6
+description: Multi-user Jupyter installation
+home: https://github.com/mbuechner/ddbjupyterhub
+icon: https://hub.jupyter.org/helm-chart/images/hublogo.svg
+keywords:
+- jupyter
+- jupyterhub
+- dnb
+- ddbkultur
+kubeVersion: '>=1.27.0-0'
+maintainers:
+- email: m.buechner@dnb.de
+  name: Michael Büchner
+name: ddbjupyterhub
+sources:
+- https://github.com/mbuechner/ddbjupyterhub
+version: 1.0.0

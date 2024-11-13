@@ -1,7 +1,9 @@
 # Note: you can amend this values.yaml file to substitute your own custom docker images instead of those
 # provided by the Jupyter project if required.
-
 proxy:
+#  image:
+#    name: image-registry.openshift-image-registry.svc:5000/ddbjupyterhub-t/ddbjupyterlabproxy
+#    tag: 4.6.1
   service:
     type: ClusterIP
   https: # Enable and extend to configure HTTPS.
@@ -29,19 +31,85 @@ proxy:
       runAsGroup: # let openshift set the value
 
 hub:
+  image:
+    name: image-registry.openshift-image-registry.svc:5000/ddbjupyterhub-t/ddbjupyterlabhub
+    tag: 3.3.8
   podSecurityContext:
     fsGroup:
   containerSecurityContext:
     <<: *security_context
     runAsUser: # let openshift set the value
     runAsGroup: # let openshift set the value
+#  command:
+#    - "/bin/bash"
+#    - "-c"
+#    - "pip install -q pandas"
+  config:
+    Authenticator:
+      admin_users:
+        - admin
+#    GenericOAuthenticator:
+#      client_id: your-client-id
+#      client_secret: your-client-secret
+#      oauth_callback_url: https://your-jupyterhub-domain/hub/oauth_callback
+#      authorize_url: https://${host}/realms/${realm}/protocol/openid-connect/auth
+#      token_url: https://${host}/realms/${realm}/protocol/openid-connect/token
+#      userdata_url: https://${host}/realms/${realm}/protocol/openid-connect/userinfo
+#      login_service: keycloak
+#      username_claim: preferred_username
+#      userdata_params:
+#        state: state
+#      # In order to use keycloak client's roles as authorization layer
+#      claim_groups_key: roles
+#      allowed_groups:
+#        - user
+#      admin_groups:
+#        - admin
+#    JupyterHub:
+#      authenticator_class: generic-oauth
 
 singleuser:
   # startTimeout: 1200 # Extend because of large image size.
   uid: # let openshift set the value
   fsGid:
+  image:
+    # Inspect the Dockerfile at:
+    # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html
+    name: image-registry.openshift-image-registry.svc:5000/ddbjupyterhub-t/ddbjupyterlabnotebook
+    tag: 7.2.2
+  # `cmd: null` allows the custom CMD of the Jupyter docker-stacks to be used
+  # which performs further customization on startup.
+  cmd: null
   cloudMetadata:
     blockWithIptables: false
+  memory:
+    limit: 2G
+    guarantee: 512M
+  cpu:
+    limit: .5
+    guarantee: .1
+  storage:
+    capacity: 1Gi
+  extraFiles:
+    # jupyter_notebook_config reference: https://jupyter-notebook.readthedocs.io/en/stable/config.html
+    jupyter_notebook_config.json:
+      mountPath: /etc/jupyter/jupyter_notebook_config.json
+      # data is a YAML structure here but will be rendered to JSON file as our
+      # file extension is ".json".
+      data:
+        MappingKernelManager:
+          # cull_idle_timeout: timeout (in seconds) after which an idle kernel is
+          # considered ready to be culled
+          cull_idle_timeout: 1200 # default: 0
+          # cull_interval: the interval (in seconds) on which to check for idle
+          # kernels exceeding the cull timeout value
+          cull_interval: 120 # default: 300
+          # cull_connected: whether to consider culling kernels which have one
+          # or more connections
+          cull_connected: true # default: false
+          # cull_busy: whether to consider culling kernels which are currently
+          # busy running some code
+          cull_busy: false # default: false
 
 prePuller:
   containerSecurityContext:
@@ -62,6 +130,7 @@ prePuller:
 
 scheduling:
   userScheduler:
+    enabled: false
     containerSecurityContext:
       <<: *security_context
       runAsUser: # let openshift set the value

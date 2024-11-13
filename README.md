@@ -38,6 +38,12 @@ helm upgrade \
   --post-renderer ./hook.sh
 ```
 
+### ... at DNB OpenShift cluster
+
+```bash
+helm upgrade --cleanup-on-fail --install ddbjupyterhub-t jupyterhub/jupyterhub --version 3.3.8 --namespace ddbjupyterhub-t --values ./values.yaml --post-renderer ./hook.sh
+```
+
 This will apply values to the `jupyterhub/jupyterhub` helm chart, create a new namespace, and then run the `--post-renderer` script. This post renderer will output the result of the populated helm template to a `resources.yaml`. Note, at this point only the `values.yaml` changes have been applied. After this point kustomize is run via the OpenShift CLI, which applies the kustomize openshift overlay to the populated helm template. The temporary `resources.yaml` file is then deleted.
 
 ## Notes

@@ -3,6 +3,7 @@ apiVersion: route.openshift.io/v1
 metadata:
   name: notebooks
 spec:
+  host: jupyterhub-t.apps.ddb.mandate.prod.jason.dnb.de
   to:
     kind: Service
     name: proxy-public

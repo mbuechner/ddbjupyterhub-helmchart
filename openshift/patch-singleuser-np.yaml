@@ -4,3 +4,5 @@
 - op: replace
   path: /spec/egress/3/ports/0/port
   value: 5353
+- op: remove
+  path: /spec/egress/4/to/0/ipBlock/except/0

@@ -1,6 +1,12 @@
 resources:
   - ../base
   - resource-route-proxy-public.yaml
+  - resource-buildconfig-hub.yaml
+  - resource-imagestream-hub.yaml
+  - resource-buildconfig-proxy.yaml
+  - resource-imagestream-proxy.yaml
+  - resource-buildconfig-notebook.yaml
+  - resource-imagestream-notebook.yaml
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -29,3 +35,9 @@ patches:
       kind: NetworkPolicy
       name: singleuser
     path: patch-singleuser-np.yaml
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: proxy
+    path: patch-proxy-deployment.yaml
